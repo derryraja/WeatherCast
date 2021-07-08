@@ -91,7 +91,7 @@ class _HomePageState extends State<HomePage> {
                               width: 20,
                             ),
                             Text(
-                              '20°',
+                              '36 °',
                               style: GoogleFonts.montserrat(
                                   fontSize: 50,
                                   fontWeight: FontWeight.normal,
