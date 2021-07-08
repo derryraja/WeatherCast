@@ -11,14 +11,16 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  int temperature = 0;
+  String location = 'Chennai';
+
   @override
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topCenter,
-          end: Alignment.bottomCenter,
-          colors: [AppColor.kprimaryColor, AppColor.ksecondaryColor],
+        image: DecorationImage(
+          image: AssetImage('assets/clear.png'),
+          fit: BoxFit.cover,
         ),
       ),
       child: Scaffold(
@@ -34,17 +36,7 @@ class _HomePageState extends State<HomePage> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'Chennai',
-                        style: GoogleFonts.montserrat(
-                            fontSize: 22,
-                            fontWeight: FontWeight.w600,
-                            color: AppColor.kwhite),
-                      ),
-                      SizedBox(
-                        height: 12,
-                      ),
-                      Text(
-                        'India',
+                        location,
                         style: GoogleFonts.montserrat(
                             fontSize: 22,
                             fontWeight: FontWeight.w600,
@@ -91,7 +83,7 @@ class _HomePageState extends State<HomePage> {
                               width: 20,
                             ),
                             Text(
-                              '36 °',
+                              temperature.toString() + ' °C',
                               style: GoogleFonts.montserrat(
                                   fontSize: 50,
                                   fontWeight: FontWeight.normal,
@@ -102,7 +94,44 @@ class _HomePageState extends State<HomePage> {
                   ),
                 ),
                 Padding(
-                  padding: const EdgeInsets.only(top: 180),
+                  padding: const EdgeInsets.only(top: 150),
+                  child: TextField(
+                    style: TextStyle(
+                      color: AppColor.kprimaryColor,
+                    ),
+                    keyboardType: TextInputType.name,
+                    onChanged: (value) {
+                      setState(() {
+                        //email = value;
+                      });
+                    },
+                    //textAlign: TextAlign.start,
+                    decoration: InputDecoration(
+                      filled: true,
+                      fillColor: Colors.transparent,
+                      enabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(15.0),
+                        borderSide: BorderSide(
+                          color: AppColor.klightGrey,
+                        ),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(15.0),
+                        borderSide:
+                            BorderSide(color: AppColor.kwhite, width: 1.5),
+                      ),
+                      prefixIcon: Icon(
+                        Icons.search,
+                        color: AppColor.kwhite,
+                      ),
+                      labelText: 'Search',
+                      labelStyle: GoogleFonts.montserrat(
+                          fontSize: 16, color: AppColor.kwhite),
+                    ),
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.only(top: 40),
                   child: Row(
                     children: [
                       Text(
@@ -143,7 +172,7 @@ class _HomePageState extends State<HomePage> {
                   ),
                 ),
                 Padding(
-                  padding: const EdgeInsets.only(top: 40),
+                  padding: const EdgeInsets.only(top: 30),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
