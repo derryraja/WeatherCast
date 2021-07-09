@@ -20,6 +20,7 @@ class _HomePageState extends State<HomePage> {
   int wind = 8;
   int humidity = 82;
   int visibility = 7;
+  String errorMessage = '';
 
   String searchApiUrl =
       'https://www.metaweather.com/api/location/search/?query=';
@@ -31,14 +32,22 @@ class _HomePageState extends State<HomePage> {
   }
 
   Future fetchSearch(String input) async {
-    var oriSearchResult = searchApiUrl + input;
-    var searchResult = await http.get(Uri.parse(oriSearchResult));
-    var result = json.decode(searchResult.body)[0];
+    try {
+      var oriSearchResult = searchApiUrl + input;
+      var searchResult = await http.get(Uri.parse(oriSearchResult));
+      var result = json.decode(searchResult.body)[0];
 
-    setState(() {
-      location = result["title"];
-      woeid = result["woeid"];
-    });
+      setState(() {
+        location = result["title"];
+        woeid = result["woeid"];
+        errorMessage = '';
+      });
+    } catch (error) {
+      setState(() {
+        errorMessage =
+            "Sorry, we don't have data about this city. Try another one.";
+      });
+    }
   }
 
   Future fetchLocation() async {
@@ -183,7 +192,7 @@ class _HomePageState extends State<HomePage> {
                       //   ),
                       // ),
                       Padding(
-                        padding: const EdgeInsets.only(top: 200),
+                        padding: const EdgeInsets.only(top: 180),
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
@@ -321,6 +330,13 @@ class _HomePageState extends State<HomePage> {
                           ),
                         ),
                       ),
+                      SizedBox(
+                        height: 12,
+                      ),
+                      Text(errorMessage,
+                          textAlign: TextAlign.left,
+                          style: GoogleFonts.montserrat(
+                              color: AppColor.klightGrey, fontSize: 13))
                     ],
                   ),
                 ),
