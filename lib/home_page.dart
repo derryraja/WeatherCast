@@ -350,11 +350,11 @@ Widget setIcon() {
   var now = DateTime.now();
   Widget icon;
 
-  if (now.hour < 5 && now.hour > 16) {
+  if (now.hour > 18) {
     icon = Icon(
       Icons.nightlight_outlined,
       size: 50,
-      color: Colors.blue,
+      color: Colors.white,
     );
   } else {
     icon = Icon(
