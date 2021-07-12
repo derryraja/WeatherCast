@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:weathercast/Themes/app_color.dart';
 import 'package:http/http.dart' as http;
+import 'package:geocoding/geocoding.dart';
+import 'package:geolocator/geolocator.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -21,6 +23,9 @@ class _HomePageState extends State<HomePage> {
   int humidity = 82;
   int visibility = 7;
   String errorMessage = '';
+
+  late Position _currentPosition;
+  late String _currentAddress;
 
   String searchApiUrl =
       'https://www.metaweather.com/api/location/search/?query=';
@@ -70,6 +75,38 @@ class _HomePageState extends State<HomePage> {
     await fetchLocation();
   }
 
+  _getCurrentLocation() {
+    Geolocator.getCurrentPosition(
+            desiredAccuracy: LocationAccuracy.best,
+            forceAndroidLocationManager: true)
+        .then((Position position) {
+      setState(() {
+        _currentPosition = position;
+        _getAddressFromLatLng();
+      });
+    }).catchError((e) {
+      print(e);
+    });
+  }
+
+  _getAddressFromLatLng() async {
+    try {
+      List<Placemark> placemarks = await placemarkFromCoordinates(
+          _currentPosition.latitude, _currentPosition.longitude);
+
+      Placemark place = placemarks[0];
+
+      setState(() {
+        _currentAddress =
+            "${place.locality}, ${place.postalCode}, ${place.country}";
+      });
+      onTextFieldSubmitted(place.locality);
+      print(place.locality);
+    } catch (e) {
+      print(e);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -93,26 +130,41 @@ class _HomePageState extends State<HomePage> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Container(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            Text(
-                              location,
-                              style: GoogleFonts.montserrat(
-                                  fontSize: 22,
-                                  fontWeight: FontWeight.w600,
-                                  color: AppColor.kwhite),
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  location,
+                                  style: GoogleFonts.montserrat(
+                                      fontSize: 22,
+                                      fontWeight: FontWeight.w600,
+                                      color: AppColor.kwhite),
+                                ),
+                                SizedBox(
+                                  height: 12,
+                                ),
+                                Text(
+                                  'July 8th, 2020',
+                                  style: GoogleFonts.montserrat(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.normal,
+                                      color: AppColor.kwhite),
+                                ),
+                              ],
                             ),
-                            SizedBox(
-                              height: 12,
-                            ),
-                            Text(
-                              'July 8th, 2020',
-                              style: GoogleFonts.montserrat(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.normal,
-                                  color: AppColor.kwhite),
-                            ),
+                            GestureDetector(
+                              onTap: () {
+                                _getCurrentLocation();
+                              },
+                              child: Icon(
+                                Icons.location_city,
+                                size: 36.0,
+                                color: AppColor.kwhite,
+                              ),
+                            )
                           ],
                         ),
                       ),
@@ -284,7 +336,7 @@ class _HomePageState extends State<HomePage> {
                                   height: 5,
                                 ),
                                 Text(
-                                  'Miles',
+                                  'miles',
                                   style: GoogleFonts.montserrat(
                                       fontSize: 14,
                                       fontWeight: FontWeight.normal,
