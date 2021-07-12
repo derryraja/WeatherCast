@@ -38,6 +38,8 @@ dependencies:
   http: ^0.13.3
   geocoding: ^1.0.5
   geolocator: ^6.1.1
+  jiffy: ^4.1.0
+  intl: ^0.17.0
 
 dev_dependencies:
   flutter_test:

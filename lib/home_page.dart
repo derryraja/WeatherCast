@@ -6,6 +6,8 @@ import 'package:weathercast/Themes/app_color.dart';
 import 'package:http/http.dart' as http;
 import 'package:geocoding/geocoding.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:jiffy/jiffy.dart';
+import 'package:intl/intl.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -23,6 +25,11 @@ class _HomePageState extends State<HomePage> {
   int humidity = 82;
   int visibility = 7;
   String errorMessage = '';
+  var time = Jiffy().yMMMMd;
+
+  var minTemperatureForecast = List<int>.filled(7, 0, growable: true);
+  var maxTemperatureForecast = List<int>.filled(7, 0, growable: true);
+  var abbreviationForecast = List<int>.filled(7, 0, growable: true);
 
   late Position _currentPosition;
   late String _currentAddress;
@@ -34,6 +41,7 @@ class _HomePageState extends State<HomePage> {
   initState() {
     super.initState();
     fetchLocation();
+    fetchLocationDay();
   }
 
   Future fetchSearch(String input) async {
@@ -70,9 +78,31 @@ class _HomePageState extends State<HomePage> {
     });
   }
 
+  Future fetchLocationDay() async {
+    var today = DateTime.now();
+    for (var i = 0; i < 7; i++) {
+      var oriLocationDayResult = Uri.parse(locationApiUrl +
+          woeid.toString() +
+          '/' +
+          DateFormat('y/M/d')
+              .format(today.add(Duration(days: i + 1)))
+              .toString());
+      var locationDayResult = await http.get(oriLocationDayResult);
+      var result = json.decode(locationDayResult.body);
+      var data = result[0];
+
+      setState(() {
+        minTemperatureForecast[i] = data["min_temp"].round();
+        maxTemperatureForecast[i] = data["max_temp"].round();
+        abbreviationForecast[i] = data["weather_state_abbr"];
+      });
+    }
+  }
+
   void onTextFieldSubmitted(String input) async {
     await fetchSearch(input);
     await fetchLocation();
+    await fetchLocationDay();
   }
 
   _getCurrentLocation() {
@@ -147,7 +177,7 @@ class _HomePageState extends State<HomePage> {
                                   height: 12,
                                 ),
                                 Text(
-                                  'July 8th, 2020',
+                                  time,
                                   style: GoogleFonts.montserrat(
                                       fontSize: 16,
                                       fontWeight: FontWeight.normal,
@@ -169,7 +199,7 @@ class _HomePageState extends State<HomePage> {
                         ),
                       ),
                       Padding(
-                        padding: const EdgeInsets.only(top: 200),
+                        padding: const EdgeInsets.only(top: 100),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.center,
                           mainAxisAlignment: MainAxisAlignment.center,
@@ -200,6 +230,22 @@ class _HomePageState extends State<HomePage> {
                                   ),
                                 ]),
                           ],
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.only(top: 150),
+                        child: SingleChildScrollView(
+                          scrollDirection: Axis.horizontal,
+                          child: Row(
+                            children: <Widget>[
+                              for (var i = 0; i < 7; i++)
+                                forecastElement(
+                                    i + 1,
+                                    abbreviationForecast[i],
+                                    minTemperatureForecast[i],
+                                    maxTemperatureForecast[i]),
+                            ],
+                          ),
                         ),
                       ),
                       // Padding(
@@ -244,7 +290,7 @@ class _HomePageState extends State<HomePage> {
                       //   ),
                       // ),
                       Padding(
-                        padding: const EdgeInsets.only(top: 180),
+                        padding: const EdgeInsets.only(top: 40),
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
@@ -417,4 +463,49 @@ Widget setIcon() {
   }
 
   return icon;
+}
+
+Widget forecastElement(
+    daysFromNow, abbreviation, minTemperature, maxTemperature) {
+  var now = new DateTime.now();
+  var oneDayFromNow = now.add(new Duration(days: daysFromNow));
+  return Padding(
+    padding: const EdgeInsets.only(right: 16.0),
+    child: Container(
+      decoration: BoxDecoration(
+        color: Color.fromRGBO(205, 212, 228, 0.2),
+        borderRadius: BorderRadius.circular(10),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          children: <Widget>[
+            Text(
+              new DateFormat.E().format(oneDayFromNow),
+              style:
+                  GoogleFonts.montserrat(color: AppColor.kwhite, fontSize: 25),
+            ),
+            Text(
+              new DateFormat.MMMd().format(oneDayFromNow),
+              style:
+                  GoogleFonts.montserrat(color: AppColor.kwhite, fontSize: 20),
+            ),
+            SizedBox(
+              height: 15,
+            ),
+            Text(
+              'High: ' + maxTemperature.toString() + ' °C',
+              style:
+                  GoogleFonts.montserrat(color: AppColor.kwhite, fontSize: 16),
+            ),
+            Text(
+              'Low: ' + minTemperature.toString() + ' °C',
+              style:
+                  GoogleFonts.montserrat(color: AppColor.kwhite, fontSize: 16),
+            ),
+          ],
+        ),
+      ),
+    ),
+  );
 }
