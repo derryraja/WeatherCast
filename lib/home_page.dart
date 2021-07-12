@@ -27,9 +27,9 @@ class _HomePageState extends State<HomePage> {
   String errorMessage = '';
   var time = Jiffy().yMMMMd;
 
-  var minTemperatureForecast = List.filled(7, null);
-  var maxTemperatureForecast = List.filled(7, null);
-  var abbreviationForecast = List.filled(7, null);
+  var minTemperatureForecast = List.filled(7, 0, growable: false);
+  var maxTemperatureForecast = List.filled(7, 0, growable: false);
+  var abbreviationForecast = List.filled(7, 0, growable: false);
 
   late Position _currentPosition;
   late String _currentAddress;
@@ -199,7 +199,7 @@ class _HomePageState extends State<HomePage> {
                         ),
                       ),
                       Padding(
-                        padding: const EdgeInsets.only(top: 100),
+                        padding: const EdgeInsets.only(top: 80),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.center,
                           mainAxisAlignment: MainAxisAlignment.center,
@@ -233,7 +233,7 @@ class _HomePageState extends State<HomePage> {
                         ),
                       ),
                       Padding(
-                        padding: const EdgeInsets.only(top: 150),
+                        padding: const EdgeInsets.only(top: 140),
                         child: SingleChildScrollView(
                           scrollDirection: Axis.horizontal,
                           child: Row(
@@ -483,7 +483,7 @@ Widget forecastElement(
             Text(
               new DateFormat.E().format(oneDayFromNow),
               style:
-                  GoogleFonts.montserrat(color: AppColor.kwhite, fontSize: 25),
+                  GoogleFonts.montserrat(color: AppColor.kwhite, fontSize: 24),
             ),
             Text(
               new DateFormat.MMMd().format(oneDayFromNow),
