@@ -27,9 +27,9 @@ class _HomePageState extends State<HomePage> {
   String errorMessage = '';
   var time = Jiffy().yMMMMd;
 
-  var minTemperatureForecast = List<int>.filled(7, 0, growable: true);
-  var maxTemperatureForecast = List<int>.filled(7, 0, growable: true);
-  var abbreviationForecast = List<int>.filled(7, 0, growable: true);
+  var minTemperatureForecast = List.filled(7, null);
+  var maxTemperatureForecast = List.filled(7, null);
+  var abbreviationForecast = List.filled(7, null);
 
   late Position _currentPosition;
   late String _currentAddress;
@@ -448,7 +448,7 @@ Widget setIcon() {
   var now = DateTime.now();
   Widget icon;
 
-  if (now.hour > 18) {
+  if (now.hour < 06 || now.hour > 18 || now.hour == 0) {
     icon = Icon(
       Icons.nightlight_outlined,
       size: 50,
