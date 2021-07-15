@@ -27,9 +27,9 @@ class _HomePageState extends State<HomePage> {
   String errorMessage = '';
   var time = Jiffy().yMMMMd;
 
-  var minTemperatureForecast = List.filled(7, '', growable: false);
-  var maxTemperatureForecast = List.filled(7, '', growable: false);
-  var abbreviationForecast = List.filled(7, '', growable: false);
+  var minTemperatureForecast = List.filled(6, 0, growable: false);
+  var maxTemperatureForecast = List.filled(6, 0, growable: false);
+  //var abbreviationForecast = List.generate(7, (_) => 0);
 
   late Position _currentPosition;
   late String _currentAddress;
@@ -80,23 +80,34 @@ class _HomePageState extends State<HomePage> {
 
   Future fetchLocationDay() async {
     var today = DateTime.now();
-    for (var i = 0; i < 7; i++) {
-      var oriLocationDayResult = Uri.parse(locationApiUrl +
-          woeid.toString() +
-          '/' +
-          DateFormat('y/M/d')
-              .format(today.add(Duration(days: i + 1)))
-              .toString());
-      var locationDayResult = await http.get(oriLocationDayResult);
-      var result = json.decode(locationDayResult.body);
-      var data = result[0];
+    var oriLocationResult = locationApiUrl + woeid.toString();
+    var locationDayResult = await http.get(Uri.parse(oriLocationResult));
+    var result = json.decode(locationDayResult.body);
+    var consolidated_weather = result["consolidated_weather"];
 
-      setState(() {
-        minTemperatureForecast[i] = data["min_temp"].round();
-        maxTemperatureForecast[i] = data["max_temp"].round();
-        abbreviationForecast[i] = data["weather_state_abbr"];
-      });
-    }
+    var dataDay1 = consolidated_weather[1];
+    var dataDay2 = consolidated_weather[2];
+    var dataDay3 = consolidated_weather[3];
+    var dataDay4 = consolidated_weather[4];
+    var dataDay5 = consolidated_weather[5];
+
+    setState(() {
+      minTemperatureForecast[1] = dataDay1["min_temp"].round();
+      maxTemperatureForecast[1] = dataDay1["max_temp"].round();
+      //abbreviationForecast[i] = data["weather_state_abbr"];
+
+      minTemperatureForecast[2] = dataDay2["min_temp"].round();
+      maxTemperatureForecast[2] = dataDay2["max_temp"].round();
+
+      minTemperatureForecast[3] = dataDay3["min_temp"].round();
+      maxTemperatureForecast[3] = dataDay3["max_temp"].round();
+
+      minTemperatureForecast[4] = dataDay4["min_temp"].round();
+      maxTemperatureForecast[4] = dataDay4["max_temp"].round();
+
+      minTemperatureForecast[5] = dataDay5["min_temp"].round();
+      maxTemperatureForecast[5] = dataDay5["max_temp"].round();
+    });
   }
 
   void onTextFieldSubmitted(String input) async {
@@ -238,11 +249,8 @@ class _HomePageState extends State<HomePage> {
                           scrollDirection: Axis.horizontal,
                           child: Row(
                             children: <Widget>[
-                              for (var i = 0; i < 7; i++)
-                                forecastElement(
-                                    i + 1,
-                                    abbreviationForecast[i],
-                                    minTemperatureForecast[i],
+                              for (var i = 1; i < 6; i++)
+                                forecastElement(i, minTemperatureForecast[i],
                                     maxTemperatureForecast[i]),
                             ],
                           ),
@@ -465,8 +473,7 @@ Widget setIcon() {
   return icon;
 }
 
-Widget forecastElement(
-    daysFromNow, abbreviation, minTemperature, maxTemperature) {
+Widget forecastElement(daysFromNow, minTemperature, maxTemperature) {
   var now = new DateTime.now();
   var oneDayFromNow = now.add(new Duration(days: daysFromNow));
   return Padding(
