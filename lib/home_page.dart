@@ -27,9 +27,9 @@ class _HomePageState extends State<HomePage> {
   String errorMessage = '';
   var time = Jiffy().yMMMMd;
 
-  var minTemperatureForecast = List.filled(7, 0, growable: false);
-  var maxTemperatureForecast = List.filled(7, 0, growable: false);
-  var abbreviationForecast = List.filled(7, 0, growable: false);
+  var minTemperatureForecast = List.filled(7, '', growable: false);
+  var maxTemperatureForecast = List.filled(7, '', growable: false);
+  var abbreviationForecast = List.filled(7, '', growable: false);
 
   late Position _currentPosition;
   late String _currentAddress;
@@ -190,7 +190,7 @@ class _HomePageState extends State<HomePage> {
                                 _getCurrentLocation();
                               },
                               child: Icon(
-                                Icons.location_city,
+                                Icons.cached,
                                 size: 36.0,
                                 color: AppColor.kwhite,
                               ),
@@ -473,9 +473,9 @@ Widget forecastElement(
     padding: const EdgeInsets.only(right: 16.0),
     child: Container(
       decoration: BoxDecoration(
-        color: Color.fromRGBO(205, 212, 228, 0.2),
-        borderRadius: BorderRadius.circular(10),
-      ),
+          color: Color.fromRGBO(205, 212, 228, 0.2),
+          borderRadius: BorderRadius.circular(15),
+          border: Border.all(color: AppColor.klightGrey)),
       child: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
