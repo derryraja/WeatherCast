@@ -244,7 +244,7 @@ class _HomePageState extends State<HomePage> {
                         ),
                       ),
                       Padding(
-                        padding: const EdgeInsets.only(top: 140),
+                        padding: const EdgeInsets.only(top: 80),
                         child: SingleChildScrollView(
                           scrollDirection: Axis.horizontal,
                           child: Row(
